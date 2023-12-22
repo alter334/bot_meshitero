@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	traqwsbot "github.com/traPtitech/traq-ws-bot"
+	"github.com/traPtitech/traq-ws-bot/payload"
+
+	//"bot_meshitero/handler"
 )
 
 var (
@@ -16,12 +21,12 @@ var (
 )
 
 func main() {
-	// bot, err := traqwsbot.NewBot(&traqwsbot.Options{
-	// 	AccessToken: os.Getenv("ACCESS_TOKEN"), // Required
-	// })
-	// if err != nil {
-	// 	panic(err)
-	// }
+	bot, err := traqwsbot.NewBot(&traqwsbot.Options{
+		AccessToken: os.Getenv("ACCESS_TOKEN"), // Required
+	})
+	if err != nil {
+		panic(err)
+	}
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		log.Fatal(err)
@@ -55,25 +60,22 @@ func main() {
 
 	db = _db
 
-	// bot.OnError(func(message string) {
-	// 	log.Println("Received ERROR message: " + message)
-	// })
-	// bot.OnMessageCreated(func(p *payload.MessageCreated) {
-	// 	log.Println("Received MESSAGE_CREATED event: " + p.Message.Text)
-	// 	_, _, err := bot.API().
-	// 		MessageApi.
-	// 		PostMessage(context.Background(), p.Message.ChannelID).
-	// 		PostMessageRequest(traq.PostMessageRequest{
-	// 			Content: "oisu-",
-	// 		}).
-	// 		Execute()
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 	}
-	// })
+	bot.OnError(func(message string) {
+		log.Println("Received ERROR message: " + message)
+	})
 
-	// if err := bot.Start(); err != nil {
-	// 	panic(err)
-	// }
+	bot.OnMessageCreated(func(p *payload.MessageCreated) {
+		log.Println("Received MESSAGE_CREATED event: " + p.Message.Text)
+		cmd := strings.Split(p.Message.Text, " ")
+		log.Println(cmd[1])
+		//handler.SimplePost(bot, p.Message.ChannelID, "oisu- https://q.trap.jp/files/645e3498-e982-4c59-ba7c-576f6f1baad9")
+		if err != nil {
+			log.Println(err)
+		}
+	})
+
+	if err := bot.Start(); err != nil {
+		panic(err)
+	}
 
 }
