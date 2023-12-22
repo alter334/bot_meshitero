@@ -4,7 +4,7 @@ networks:
 services:
   mysql:
     image:  mysql:8.2.0
-    container_name: mysqldb
+    container_name: meshiterodb
     hostname: mysqldb
     environment:
       MYSQL_ROOT_PASSWORD: password

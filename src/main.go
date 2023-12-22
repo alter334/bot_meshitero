@@ -13,7 +13,7 @@ import (
 	traqwsbot "github.com/traPtitech/traq-ws-bot"
 	"github.com/traPtitech/traq-ws-bot/payload"
 
-	//"bot_meshitero/handler"
+	"bot_meshitero/handler"
 )
 
 var (
@@ -66,9 +66,10 @@ func main() {
 
 	bot.OnMessageCreated(func(p *payload.MessageCreated) {
 		log.Println("Received MESSAGE_CREATED event: " + p.Message.Text)
-		cmd := strings.Split(p.Message.Text, " ")
-		log.Println(cmd[1])
-		//handler.SimplePost(bot, p.Message.ChannelID, "oisu- https://q.trap.jp/files/645e3498-e982-4c59-ba7c-576f6f1baad9")
+		cmd := strings.Fields(p.Message.Text)
+		log.Println(cmd[len(cmd)-1])
+		meshiurl := cmd[len(cmd)-1]
+		handler.SimplePost(bot, "402a1c2c-878e-40ef-ae14-011354394e36", ":@"+p.Message.User.Name+":"+"oisu-"+meshiurl)
 		if err != nil {
 			log.Println(err)
 		}
