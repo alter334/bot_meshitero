@@ -22,7 +22,7 @@ var (
 
 func main() {
 	bot, err := traqwsbot.NewBot(&traqwsbot.Options{
-		AccessToken: os.Getenv("ACCESS_TOKEN"), // Required
+		AccessToken: os.Getenv("TRAQ_BOT_TOKEN"), // Required
 	})
 	if err != nil {
 		panic(err)
@@ -63,8 +63,6 @@ func main() {
 	bot.OnError(func(message string) {
 		log.Println("Received ERROR message: " + message)
 	})
-
-	bot.OnPing(func(p *payload.Ping) {})
 
 	bot.OnMessageCreated(func(p *payload.MessageCreated) {
 		log.Println("Received MESSAGE_CREATED event: " + p.Message.Text)
