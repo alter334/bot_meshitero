@@ -64,6 +64,8 @@ func main() {
 		log.Println("Received ERROR message: " + message)
 	})
 
+	bot.OnPing(func(p *payload.Ping) {})
+
 	bot.OnMessageCreated(func(p *payload.MessageCreated) {
 		log.Println("Received MESSAGE_CREATED event: " + p.Message.Text)
 		cmd := strings.Fields(p.Message.Text)
