@@ -69,6 +69,9 @@ func main() {
 		cmd := strings.Fields(p.Message.Text)
 		log.Println(cmd[len(cmd)-1])
 		meshiurl := cmd[len(cmd)-1]
+		attackId := handler.GetUserHome(bot, p.Message.User.ID)
+		log.Println(attackId)
+		handler.SimplePost(bot, attackId, ":@"+p.Message.User.Name+":"+"oisu-"+meshiurl)
 		handler.SimplePost(bot, "402a1c2c-878e-40ef-ae14-011354394e36", ":@"+p.Message.User.Name+":"+"oisu-"+meshiurl)
 		if err != nil {
 			log.Println(err)

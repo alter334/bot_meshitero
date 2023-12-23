@@ -30,3 +30,12 @@ func SimpleEdit(bot *traqwsbot.Bot, m string, s string) {
 		Content: s,
 	}).Execute()
 }
+
+func GetUserHome(bot *traqwsbot.Bot, postUserID string) string{
+	userdetail, httpres, err := bot.API().UserApi.GetUser(context.Background(), postUserID).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", httpres)
+	}
+	return userdetail.GetHomeChannel()
+}
