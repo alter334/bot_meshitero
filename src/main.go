@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -60,19 +62,36 @@ func main() {
 
 	db = _db
 
+	h := handler.NewHandler(db, bot)
+
 	bot.OnError(func(message string) {
 		log.Println("Received ERROR message: " + message)
 	})
 
 	bot.OnMessageCreated(func(p *payload.MessageCreated) {
 		log.Println("Received MESSAGE_CREATED event: " + p.Message.Text)
+		var user User
+		err := db.Get(&user, "SELECT * FROM `users` WHERE `id`=?", p.Message.User.ID)
+
+		//ユーザーが見つからなかったらエントリー(db登録)実行
+		if errors.Is(err, sql.ErrNoRows) {
+			h.Entry(p)
+			return
+		} else if err != nil {
+			handler.SimplePost(bot, p.Message.ChannelID, "Internal error: "+err.Error())
+			return
+		}
+
+		//-----------------------------------------------------
+		//ユーザーが存在した場合コマンド処理に応じて実行
+		//コマンドは/区切り
+		//画像url取得
 		cmd := strings.Fields(p.Message.Text)
-		log.Println(cmd[len(cmd)-1])
 		meshiurl := cmd[len(cmd)-1]
-		attackId := handler.GetUserHome(bot, p.Message.User.ID)
-		log.Println(attackId)
-		handler.SimplePost(bot, attackId, ":@"+p.Message.User.Name+":"+"oisu-"+meshiurl)
-		handler.SimplePost(bot, "402a1c2c-878e-40ef-ae14-011354394e36", ":@"+p.Message.User.Name+":"+"oisu-"+meshiurl)
+
+		//コマンドなし->通常モード(attackコマンドでも同様)
+
+		h.Attack(p, meshiurl)
 		if err != nil {
 			log.Println(err)
 		}
