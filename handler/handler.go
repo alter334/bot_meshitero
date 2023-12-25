@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/jmoiron/sqlx"
 	traqwsbot "github.com/traPtitech/traq-ws-bot"
@@ -30,16 +31,13 @@ func (h *Handler) Entry(p *payload.MessageCreated) {
 
 // 通常攻撃:db上に存在するユーザーから1人を選んで爆撃します
 func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum int) {
-	log.Println("Attack実行")
-	var attackTo string
+	var attackTo, attackName string
 
 	//初の攻撃なら自分に飛ぶ
 	if attackNum == 0 {
+		attackTo = "402a1c2c-878e-40ef-ae14-011354394e36"
 		log.Println("InitAttack実行")
-		SimplePost(h.bot, "402a1c2c-878e-40ef-ae14-011354394e36", ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
-
 	} else {
-
 		//ランダム選択1名
 		err := h.db.Get(&attackTo, "SELECT `id` FROM `users` ORDER BY RAND() LIMIT 1")
 		if err != nil {
@@ -47,12 +45,15 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 			log.Println("Internal error: " + err.Error())
 			return
 		}
+		log.Println("Attack実行")
 
-		attackId := GetUserHome(h.bot, attackTo)
-		SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
 	}
 
 	attackNum++
+	attackNumstr := strconv.Itoa(attackNum)
+	attackId, attackName := GetUserHome(h.bot, attackTo)
+	attackmesid := SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
+	SimplePost(h.bot, p.Message.ChannelID, ":@"+attackName+":"+"に爆撃しました。\n累積攻撃回数:"+attackNumstr+"回\n"+"https://q.trap.jp/messages/"+attackmesid)
 	_, err := h.db.Exec("UPDATE `users` SET `attack`=? WHERE `id`=?", attackNum, p.Message.User.ID)
 	if err != nil {
 		SimplePost(h.bot, p.Message.ChannelID, "Internal error: "+err.Error())
@@ -66,7 +67,7 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 // テスト:自爆
 func (h *Handler) SelfAttack(p *payload.MessageCreated, meshiurl string) {
 	log.Println("SelfAttack実行")
-	attackId := GetUserHome(h.bot, p.Message.User.ID)
+	attackId, _ := GetUserHome(h.bot, p.Message.User.ID)
 	SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
 	log.Println("SelfAttack完了")
 }

@@ -31,11 +31,12 @@ func SimpleEdit(bot *traqwsbot.Bot, m string, s string) {
 	}).Execute()
 }
 
-func GetUserHome(bot *traqwsbot.Bot, postUserID string) string{
+//UserのホームチャンネルUUIDとユーザー名を返す
+func GetUserHome(bot *traqwsbot.Bot, postUserID string) (homeUUID string,userName string){
 	userdetail, httpres, err := bot.API().UserApi.GetUser(context.Background(), postUserID).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", httpres)
 	}
-	return userdetail.GetHomeChannel()
+	return userdetail.GetHomeChannel() ,userdetail.GetName()
 }
