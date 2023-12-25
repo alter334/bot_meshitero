@@ -73,16 +73,17 @@ func main() {
 		var user User
 		err := db.Get(&user, "SELECT * FROM `users` WHERE `id`=?", p.Message.User.ID)
 
+		//----------------------------------------------------------------
 		//ユーザーが見つからなかったらエントリー(db登録)実行
 		if errors.Is(err, sql.ErrNoRows) {
 			h.Entry(p)
-			return
+			user.Attack = 0
 		} else if err != nil {
 			handler.SimplePost(bot, p.Message.ChannelID, "Internal error: "+err.Error())
 			return
 		}
 
-		//-----------------------------------------------------
+		//----------------------------------------------------------------
 		//ユーザーが存在した場合コマンド処理に応じて実行
 		//コマンドは/区切り
 		//画像url取得
@@ -90,11 +91,16 @@ func main() {
 		meshiurl := cmd[len(cmd)-1]
 
 		//コマンドなし->通常モード(attackコマンドでも同様)
-
-		h.Attack(p, meshiurl)
-		if err != nil {
-			log.Println(err)
+		switch len(cmd) {
+		case 1:
+			handler.SimplePost(bot, p.Message.ChannelID, "Input commands or photo")
+		default: //現在はコマンド機能は導入していないので
+			h.Attack(p, meshiurl, user.Attack)
+			if err != nil {
+				log.Println(err)
+			}
 		}
+
 	})
 
 	if err := bot.Start(); err != nil {
