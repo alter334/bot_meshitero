@@ -35,7 +35,7 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 
 	//初の攻撃なら自分に飛ぶ
 	if attackNum == 0 {
-		attackTo = "402a1c2c-878e-40ef-ae14-011354394e36"
+		attackTo = "97d954a2-695b-466d-9d94-cf4ad88dd262"
 		log.Println("InitAttack実行")
 	} else {
 		//ランダム選択1名
