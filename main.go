@@ -45,7 +45,7 @@ func main() {
 		User:                 os.Getenv("NS_MARIADB_USER"),
 		Passwd:               os.Getenv("NS_MARIADB_PASSWORD"),
 		Net:                  "tcp",
-		Addr:                 os.Getenv("NS_MARIADB_HOSTNAME") + ":" + os.Getenv("MARIADB_PORT"),
+		Addr:                 os.Getenv("NS_MARIADB_HOSTNAME") + ":" + os.Getenv("NS_MARIADB_PORT"),
 		DBName:               os.Getenv("NS_MARIADB_DATABASE"),
 		ParseTime:            true,
 		Collation:            "utf8mb4_unicode_ci",
