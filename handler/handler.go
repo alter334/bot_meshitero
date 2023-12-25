@@ -48,8 +48,9 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 			return
 		}
 
-		attackId := GetUserHome(h.bot, attackTo)
-		SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
+		attackId, attackName := GetUserHome(h.bot, attackTo)
+		attackmesid := SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
+		SimplePost(h.bot, p.Message.ChannelID, ":@"+attackName+":"+"に爆撃しました"+"https://q.trap.jp/messages/"+attackmesid)
 	}
 
 	attackNum++
@@ -66,7 +67,7 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 // テスト:自爆
 func (h *Handler) SelfAttack(p *payload.MessageCreated, meshiurl string) {
 	log.Println("SelfAttack実行")
-	attackId := GetUserHome(h.bot, p.Message.User.ID)
+	attackId, _ := GetUserHome(h.bot, p.Message.User.ID)
 	SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
 	log.Println("SelfAttack完了")
 }
