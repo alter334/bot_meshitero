@@ -27,6 +27,7 @@ func (h *Handler) Entry(p *payload.MessageCreated) {
 		return
 	}
 	SimplePost(h.bot, p.Message.ChannelID, ":@"+p.Message.User.Name+":さん\n"+"## ようこそtraP飯テロ部へ\n"+"飯テロ候補先リストに無事登録されました。今の所解除する方法はないです:gomen:")
+	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", ":@"+p.Message.User.Name+"::sansen_1::sansen_2::sansen_3:")
 }
 
 // 通常攻撃:db上に存在するユーザーから1人を選んで爆撃します
@@ -52,8 +53,8 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 	attackNum++
 	attackNumstr := strconv.Itoa(attackNum)
 	attackId, attackName := GetUserHome(h.bot, attackTo)
-	attackmesid := SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
-	SimplePost(h.bot, p.Message.ChannelID, ":@"+attackName+":"+"に爆撃しました。\n累積攻撃回数:"+attackNumstr+"回\n"+"https://q.trap.jp/messages/"+attackmesid)
+	attackMessageId := SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
+	SimplePost(h.bot, p.Message.ChannelID, ":@"+attackName+":"+"に爆撃しました。\n累積攻撃回数:"+attackNumstr+"回\n"+"https://q.trap.jp/messages/"+attackMessageId)
 	_, err := h.db.Exec("UPDATE `users` SET `attack`=? WHERE `id`=?", attackNum, p.Message.User.ID)
 	if err != nil {
 		SimplePost(h.bot, p.Message.ChannelID, "Internal error: "+err.Error())
@@ -61,6 +62,8 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 		return
 	}
 	log.Println("Attack完了")
+	//bot_playgroundチャンネルに飛ばす
+	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
 
 }
 
