@@ -115,6 +115,15 @@ func main() {
 		switch len(cmd) {
 		case 1:
 			handler.SimplePost(bot, p.Message.ChannelID, "Input commands or photo")
+		case 2:
+			switch cmd[1] {
+			case "dbenroll":
+				if p.Message.User.Name != "Alt--er" {
+					handler.SimplePost(bot, p.Message.ChannelID, "This command isn't allowed")
+					return
+				}
+				h.EnrollExistingUserHometoPlace()
+			}
 		default: //現在はコマンド機能は導入していないので
 			h.Attack(p, meshiurl, user.Attack)
 			if err != nil {
