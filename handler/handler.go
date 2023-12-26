@@ -100,6 +100,7 @@ func (h *Handler) EnrollExistingUserHometoPlace() {
 		return
 	}
 	for _, u := range channeluuids {
+		u.Channelid, _ = GetUserHome(h.bot, u.Channelid)
 		_, err := h.db.Exec("INSERT INTO `places`(`channelid`,`channelusername`) VALUES(?,?)", u.Channelid, u.Channnelusername)
 		if err != nil {
 			log.Println("Internal error: " + err.Error())
