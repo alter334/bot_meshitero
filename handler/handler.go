@@ -54,6 +54,7 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 	//初の攻撃なら自分のtimesに飛ぶ
 	if attackNum == 0 {
 		attackTo.Channelid = "402a1c2c-878e-40ef-ae14-011354394e36"
+		attackTo.Channnelusername="Alt--er"
 		log.Println("InitAttack実行")
 	} else {
 		//ランダム選択1名
