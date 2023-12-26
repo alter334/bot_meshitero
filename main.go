@@ -75,12 +75,29 @@ func main() {
 		err := db.Get(&user, "SELECT * FROM `users` WHERE `id`=?", p.Message.User.ID)
 		log.Println("B")
 		//----------------------------------------------------------------
-		//ユーザーが見つからなかったらエントリー(db登録)実行
+		//ユーザーが見つからなかったらエントリー(usersdb登録)実行
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Println("C")
 			h.Entry(p)
 			log.Println("D")
 			user.Attack = 0
+		} else if err != nil {
+			handler.SimplePost(bot, p.Message.ChannelID, "Internal error: "+err.Error())
+			return
+		}
+
+		//----------------------------------------------------------------
+		// 投稿されたチャンネルが過去に投稿されたことのないチャンネルの場合placesdb登録処理を実行
+		var exists int
+		row := db.QueryRowx("SELECT EXISTS (SELECT * FROM `places` WHERE `channelid`=?)", p.Message.ChannelID)
+		log.Println(row)
+		row.Scan(&exists)
+		log.Println(exists)
+		//----------------------------------------------------------------
+		//場所が登録されていないとき
+		if exists == 0 {
+			log.Println("F")
+			h.MonitorInsert(p)
 		} else if err != nil {
 			handler.SimplePost(bot, p.Message.ChannelID, "Internal error: "+err.Error())
 			return
@@ -98,6 +115,15 @@ func main() {
 		switch len(cmd) {
 		case 1:
 			handler.SimplePost(bot, p.Message.ChannelID, "Input commands or photo")
+		case 2:
+			switch cmd[1] {
+			case "dbenroll":
+				if p.Message.User.Name != "Alt--er" {
+					handler.SimplePost(bot, p.Message.ChannelID, "This command isn't allowed")
+					return
+				}
+				h.EnrollExistingUserHometoPlace()
+			}
 		default: //現在はコマンド機能は導入していないので
 			h.Attack(p, meshiurl, user.Attack)
 			if err != nil {

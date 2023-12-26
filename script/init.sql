@@ -9,4 +9,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `rate` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+CREATE TABLE IF NOT EXISTS `places` (
+  `channelid` char(36) NOT NULL,
+  `channelusername` text NOT NULL,
+  PRIMARY KEY (`channelid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
