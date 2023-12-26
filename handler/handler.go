@@ -31,7 +31,7 @@ func (h *Handler) Entry(p *payload.MessageCreated) {
 		log.Println("Internal error: " + err.Error())
 		return
 	}
-	SimplePost(h.bot, p.Message.ChannelID, ":@"+p.Message.User.Name+":さん\n"+"## ようこそtraP飯テロ部へ\n"+"飯テロ候補先リストに無事登録されました。今の所解除する方法はないです:gomen:")
+	SimplePost(h.bot, p.Message.ChannelID, ":@"+p.Message.User.Name+":さん\n"+"## ようこそtraP飯テロ部へ\n")
 	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", ":@"+p.Message.User.Name+"::sansen_1::sansen_2::sansen_3:")
 }
 
