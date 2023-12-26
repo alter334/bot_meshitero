@@ -14,6 +14,11 @@ type Handler struct {
 	bot *traqwsbot.Bot
 }
 
+type AttackTo struct {
+	Channelid        string `json:"channelid" db:"channelid"`
+	Channnelusername string `json:"channelusername" db:"channelusername"`
+}
+
 func NewHandler(db *sqlx.DB, bot *traqwsbot.Bot) *Handler {
 	return &Handler{db: db, bot: bot}
 }
@@ -30,17 +35,29 @@ func (h *Handler) Entry(p *payload.MessageCreated) {
 	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", ":@"+p.Message.User.Name+"::sansen_1::sansen_2::sansen_3:")
 }
 
+// 投稿先候補の追加:過去にメンションされたことのないチャンネルIDの場合投稿先候補に加わる
+func (h *Handler) MonitorInsert(p *payload.MessageCreated) {
+	_, err := h.db.Exec("INSERT INTO `places`(`channelid`,`channelusername`) VALUES(?,?)", p.Message.ChannelID, p.Message.User.Name)
+	if err != nil {
+		SimplePost(h.bot, p.Message.ChannelID, "Internal error: "+err.Error())
+		log.Println("Internal error: " + err.Error())
+		return
+	}
+	monitorMessageId := SimplePost(h.bot, p.Message.ChannelID, "**このチャンネルが飯テロ対象チャンネルに登録されました。**\n登録者::@"+p.Message.User.Name+":")
+	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", "https://q.trap.jp/messages/"+monitorMessageId+"\n:sansen_1::sansen_2::sansen_3:")
+}
+
 // 通常攻撃:db上に存在するユーザーから1人を選んで爆撃します
 func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum int) {
-	var attackTo, attackName string
+	var attackTo AttackTo
 
-	//初の攻撃なら自分に飛ぶ
+	//初の攻撃なら自分のtimesに飛ぶ
 	if attackNum == 0 {
-		attackTo = "97d954a2-695b-466d-9d94-cf4ad88dd262"
+		attackTo.Channelid = "402a1c2c-878e-40ef-ae14-011354394e36"
 		log.Println("InitAttack実行")
 	} else {
 		//ランダム選択1名
-		err := h.db.Get(&attackTo, "SELECT `id` FROM `users` ORDER BY RAND() LIMIT 1")
+		err := h.db.Get(&attackTo, "SELECT `channelid`,`channelusername` FROM `places` ORDER BY RAND() LIMIT 1")
 		if err != nil {
 			SimplePost(h.bot, p.Message.ChannelID, "Internal error: "+err.Error())
 			log.Println("Internal error: " + err.Error())
@@ -52,9 +69,8 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 
 	attackNum++
 	attackNumstr := strconv.Itoa(attackNum)
-	attackId, attackName := GetUserHome(h.bot, attackTo)
-	attackMessageId := SimplePost(h.bot, attackId, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
-	SimplePost(h.bot, p.Message.ChannelID, ":@"+attackName+":"+"に爆撃しました。\n累積攻撃回数:"+attackNumstr+"回\n"+"https://q.trap.jp/messages/"+attackMessageId)
+	attackMessageId := SimplePost(h.bot, attackTo.Channelid, ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
+	SimplePost(h.bot, p.Message.ChannelID, ":@"+attackTo.Channnelusername+":"+"に爆撃しました。\n累積攻撃回数:"+attackNumstr+"回\n"+"https://q.trap.jp/messages/"+attackMessageId)
 	_, err := h.db.Exec("UPDATE `users` SET `attack`=? WHERE `id`=?", attackNum, p.Message.User.ID)
 	if err != nil {
 		SimplePost(h.bot, p.Message.ChannelID, "Internal error: "+err.Error())

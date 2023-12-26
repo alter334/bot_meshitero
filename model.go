@@ -6,3 +6,5 @@ type User struct {
 	Attack   int    `json:"attack" db:"attack"`
 	Rate     int    `json:"rate" db:"rate"`
 }
+
+

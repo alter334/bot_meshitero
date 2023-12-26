@@ -75,12 +75,29 @@ func main() {
 		err := db.Get(&user, "SELECT * FROM `users` WHERE `id`=?", p.Message.User.ID)
 		log.Println("B")
 		//----------------------------------------------------------------
-		//ユーザーが見つからなかったらエントリー(db登録)実行
+		//ユーザーが見つからなかったらエントリー(usersdb登録)実行
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Println("C")
 			h.Entry(p)
 			log.Println("D")
 			user.Attack = 0
+		} else if err != nil {
+			handler.SimplePost(bot, p.Message.ChannelID, "Internal error: "+err.Error())
+			return
+		}
+
+		//----------------------------------------------------------------
+		// 投稿されたチャンネルが過去に投稿されたことのないチャンネルの場合placesdb登録処理を実行
+		var exists int
+		row := db.QueryRowx("SELECT EXISTS (SELECT * FROM `places` WHERE `channelid`=?)", p.Message.ChannelID)
+		log.Println(row)
+		row.Scan(&exists)
+		log.Println(exists)
+		//----------------------------------------------------------------
+		//場所が登録されていないとき
+		if exists == 0 {
+			log.Println("F")
+			h.MonitorInsert(p)
 		} else if err != nil {
 			handler.SimplePost(bot, p.Message.ChannelID, "Internal error: "+err.Error())
 			return
