@@ -12,6 +12,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	"github.com/robfig/cron"
 	traqwsbot "github.com/traPtitech/traq-ws-bot"
 	"github.com/traPtitech/traq-ws-bot/payload"
 
@@ -132,6 +133,9 @@ func main() {
 		}
 
 	})
+
+	c := cron.New()
+	c.AddFunc("* * * * *", func(){log.Println(time.Now())})
 
 	if err := bot.Start(); err != nil {
 		panic(err)
