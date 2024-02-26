@@ -31,17 +31,28 @@ func SimpleEdit(bot *traqwsbot.Bot, m string, s string) {
 	}).Execute()
 }
 
-//UserのホームチャンネルUUIDとユーザー名を返す:現在不使用
-func GetUserHome(bot *traqwsbot.Bot, postUserID string) (homeUUID string,userName string){
+func GetMessageContent(bot *traqwsbot.Bot, messageid string) (message *traq.Message) {
+	message, httpres, err := bot.API().MessageApi.GetMessage(context.Background(), messageid).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", httpres)
+		return nil
+	}
+
+	return message
+}
+
+// UserのホームチャンネルUUIDとユーザー名を返す:現在不使用
+func GetUserHome(bot *traqwsbot.Bot, postUserID string) (homeUUID string, userName string) {
 	userdetail, httpres, err := bot.API().UserApi.GetUser(context.Background(), postUserID).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", httpres)
 	}
-	return userdetail.GetHomeChannel() ,userdetail.GetName()
+	return userdetail.GetHomeChannel(), userdetail.GetName()
 }
 
-//User名をUUIDから返す
+// User名をUUIDから返す
 func GetUserName(bot *traqwsbot.Bot, postUserID string) (userName string) {
 	userdetail, httpres, err := bot.API().UserApi.GetUser(context.Background(), postUserID).Execute()
 	if err != nil {
@@ -50,4 +61,3 @@ func GetUserName(bot *traqwsbot.Bot, postUserID string) (userName string) {
 	}
 	return userdetail.GetName()
 }
-

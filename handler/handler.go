@@ -89,6 +89,29 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 
 }
 
+// 通常攻撃:db上に存在するユーザーから1人を選んで爆撃します
+func (h *Handler) SecondAttack(messageuuid string) {
+	var attackTo AttackTo
+	message := GetMessageContent(h.bot, messageuuid)
+
+	//ランダム選択1名
+	err := h.db.Get(&attackTo, "SELECT `channelid`,`channelusername` FROM `places` ORDER BY RAND() LIMIT 1")
+	if err != nil {
+		SimplePost(h.bot, message.ChannelId, "Internal error: "+err.Error())
+		log.Println("Internal error: " + err.Error())
+		return
+	}
+	log.Println("SecAttack実行")
+
+	attackMessageId := SimplePost(h.bot, attackTo.Channelid, message.Content)
+	SimplePost(h.bot, message.ChannelId, ":@"+attackTo.Channnelusername+":"+"に再爆撃しました。\n"+"https://q.trap.jp/messages/"+attackMessageId)
+
+	log.Println("SecAttack完了")
+	//bot_playgroundチャンネルに飛ばす
+	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", message.Content)
+
+}
+
 //--------------------------------
 // 開発用:既存ユーザのホームチャンネルを攻撃対象に
 

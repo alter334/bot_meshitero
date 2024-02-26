@@ -23,6 +23,9 @@ var (
 )
 
 func main() {
+
+	log.Println(time.Now())
+
 	bot, err := traqwsbot.NewBot(&traqwsbot.Options{
 		AccessToken: os.Getenv("TRAQ_BOT_TOKEN"), // Required
 	})
@@ -129,6 +132,28 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
+		}
+
+	})
+
+	bot.OnBotMessageStampsUpdated(func(p *payload.BotMessageStampsUpdated) {
+		// スタンプ数が一定以上になったら再テロの確率が上がっていく 10回目以降は更新のたびに50%で2次テロ
+		// 保守性とか何も考えない杜撰なコードを書いている
+		oisiso := "4255a0b0-0289-48cd-be19-34bd8b7bf12b"
+		ct := 0
+		for _, messagestamp := range p.Stamps {
+			if messagestamp.StampID == oisiso {
+				ct++
+			}
+			if ct == 10 {
+				break
+			}
+		}
+
+		ran := 0.05 * float64(ct)
+		log.Println(ran)
+		if handler.Random(ran) {
+			h.SecondAttack(p.MessageID)
 		}
 
 	})
