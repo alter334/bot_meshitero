@@ -151,7 +151,7 @@ func main() {
 			}
 		}
 
-		ran := 0.05 * math.Sqrt(10*float64(ct))
+		ran := 0.01 * math.Sqrt(10*float64(ct))
 		log.Println(ran)
 		if handler.Random(ran) {
 			h.SecondAttack(p.MessageID)
