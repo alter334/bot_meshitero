@@ -43,8 +43,9 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+	
 	fmt.Println(os.Getenv("NS_MARIADB_USER"))
-	fmt.Println("aa")
+	
 	conf := mysql.Config{
 		User:                 os.Getenv("NS_MARIADB_USER"),
 		Passwd:               os.Getenv("NS_MARIADB_PASSWORD"),
