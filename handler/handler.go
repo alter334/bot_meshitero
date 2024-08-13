@@ -86,6 +86,8 @@ func (h *Handler) Attack(p *payload.MessageCreated, meshiurl string, attackNum i
 	log.Println("Attack完了")
 	//bot_playgroundチャンネルに飛ばす
 	SimplePost(h.bot, "baaf247d-125a-47e4-82a8-ffcccab5f0b8", ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
+	//#gps/times/sakura/gohan に飛ばす
+	SimplePost(h.bot, "01914b78-e461-73e5-a8f3-d436111adbeb", ":@"+p.Message.User.Name+":"+":oisu-1::oisu-2::oisu-3::oisu-4yoko:"+meshiurl)
 
 }
 
