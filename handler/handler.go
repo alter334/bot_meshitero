@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"context"
 	"log"
 	"strconv"
+	"strings"
 
+	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
 	traqwsbot "github.com/traPtitech/traq-ws-bot"
 	"github.com/traPtitech/traq-ws-bot/payload"
@@ -114,6 +117,18 @@ func (h *Handler) SecondAttack(messageuuid string) {
 	//フライング円盤
 	//SimplePost(h.bot, "f12aea3d-2401-4d50-a417-e14785496c69", message.Content)
 
+}
+
+// DMにUUIDが投稿されたら、そのUUIDのメッセージを削除する
+func (h *Handler) DirectMessageCreated(p *payload.DirectMessageCreated) {
+	messageUUID, err := uuid.FromString(strings.TrimSpace(p.Message.Text))
+	if err != nil {
+		return
+	}
+
+	if _, err := h.bot.API().MessageApi.DeleteMessage(context.Background(), messageUUID.String()).Execute(); err != nil {
+		log.Println("Internal error: " + err.Error())
+	}
 }
 
 //--------------------------------

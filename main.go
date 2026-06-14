@@ -43,9 +43,9 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	
+
 	fmt.Println(os.Getenv("NS_MARIADB_USER"))
-	
+
 	conf := mysql.Config{
 		User:                 os.Getenv("NS_MARIADB_USER"),
 		Passwd:               os.Getenv("NS_MARIADB_PASSWORD"),
@@ -136,6 +136,11 @@ func main() {
 			}
 		}
 
+	})
+
+	bot.OnDirectMessageCreated(func(p *payload.DirectMessageCreated) {
+		log.Println("Received DIRECT_MESSAGE_CREATED event: " + p.Message.Text)
+		h.DirectMessageCreated(p)
 	})
 
 	bot.OnBotMessageStampsUpdated(func(p *payload.BotMessageStampsUpdated) {
